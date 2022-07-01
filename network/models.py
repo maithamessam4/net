@@ -10,7 +10,7 @@ class User(AbstractUser):
 
 class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE , related_name='posts')
-    desc = models.TextField()
+    description = models.TextField()
     date = models.DateTimeField(auto_now_add=True)
     like = models.ManyToManyField(User,blank=True , related_name='user_likes')
 
@@ -18,7 +18,7 @@ class Post(models.Model):
 
 
     def __str__(self) :
-        return f'{self.author} {self.desc} {self.date}'
+        return f'{self.author} {self.description} {self.date}'
 
     def likes(self):
         return self.like.all().count()

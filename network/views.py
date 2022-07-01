@@ -204,10 +204,11 @@ def edit_post(request,post_id):
    if request.user == post.author:
        body_unicode = request.body.decode('utf-8')
        body = json.loads(body_unicode)
-       desc = body['desc']
+       description = body['description']
 
-       Post.objects.filter(pk = post_id).update(desc = f'{desc}')
-       return JsonResponse({'message':"post updated success", 'desc': desc} , status = 200)
+       Post.objects.filter(pk = post_id).update(description = f'{description}')
+       return JsonResponse({'message':"post updated success", 'description': description} , status = 200)
 
    else:
          return JsonResponse({'error':'need premision'}, status = 400)
+     
