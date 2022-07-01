@@ -1,0 +1,67 @@
+{% load humanize %}
+{% load static %}
+{% for post in  page_posts %}
+
+<div class="d-flex justify-content-center mt-5">
+    <div class="card" style="width: 45rem;">
+        <div id="post_headline_{{ post.id }}">
+
+            <div class="card-body">
+                <div class="d-flex   " >
+                    
+                    <a href ="{% url 'profile' post.author.id %}"class="card-title">{{post.author}}</a>  
+                    <div class="ml-2 d-flex">
+                      
+                        <p class="card-text" ><small class="text-muted" >{{post.date|naturaltime}}</small></p>
+                    </div>
+                  
+                
+                </div>
+                  
+            </div>
+            <div  class = 'p-5'id="post_descgroup_{{post.id}}">
+                <p id="post_desc_{{post.id}}">{{post.desc}}</p>
+    
+            </div>
+            <div class="d-flex">
+                <div class="ml-4">
+                    {% if user.is_authenticated and user == post.author %}
+    
+                    <a href="javascript:void(0)" data-id="{{post.id}}" id="edit_{{post.id}}">Edit</a>
+                    {% endif %}   
+                   
+                </div>
+                <div  class ='ml-2 mb-5'id = "post_likes_{{post.id}}">
+                    {% if user.is_authenticated %}
+                    <i id="post_likeicon_{{post.id}}" data-id ="{{post.id}}" class="likeicon-user fa-heart {% if user in post.like.all %} fas {%else%} far {%endif%}"></i>
+                    {%else%}
+                    <i class="likeicon fa-heart {% if post.likes != 0%} fas {%else%} far {%endif%}"></i>
+                    {% endif %}
+                    <span id ='post_countlike_{{post.id}}'>{{post.likes}}</span>
+                </div>
+                profile_page
+
+            </div>
+    
+     
+ 
+
+        </div>
+        <div class="text-right mb-2 mr-2" id="save_buttons_{{post.id}}">
+
+        </div>
+
+  
+   
+      </div>
+
+ 
+    
+</div>
+
+
+
+
+
+
+{% endfor %}

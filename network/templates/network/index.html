@@ -1,0 +1,62 @@
+{% extends "network/layout.html" %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+
+{% if user.is_authenticated %}
+    <div class="d-flex justify-content-center mt-5">
+        <div class="card w-50 h-75" >
+            <div class="card-body  " >
+              <h5 class="card-title">New Post </h5>
+              <div class="">
+               
+                <form method="POST" action="{%url 'newpost'%}">
+                    {% csrf_token %}
+                    {{form|crispy}}
+                        <div class="text-right">
+                          <button type="submit"  class="btn btn-primary">POST</button>
+                        </div>
+                        
+                    </div>
+                    
+                
+                  
+                </form>
+                {% endif %}
+              </div>
+            
+            </div>
+          </div>
+     
+    </div>
+
+    
+    {% include 'network/posts.html' %}
+    <div class="d-flex justify-content-center mt-5">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+              <li class="page-item">
+                  {% if page_posts.has_previous %}
+                <a class="page-link" href="{{prev_url}}" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+                {% endif %}
+              </li>
+              <li class="page-item"><a class="page-link" href="#">1</a></li>
+              <li class="page-item"><a class="page-link" href="#">2</a></li>
+              <li class="page-item"><a class="page-link" href="#">3</a></li>
+              <li class="page-item">
+                {% if page_posts.has_next %}
+                 <a class="page-link" href="{{next_url}}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+                {% endif %}
+              </li>
+            </ul>
+          </nav>
+        
+    </div>
+    
+    
+   
+{% endblock %}
