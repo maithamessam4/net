@@ -94,44 +94,6 @@ def register(request):
     else:
         return render(request, "network/register.html")
 
-def new_post(request):
-    if request.method != 'POST':
-        return JsonResponse({"error": 'required' } , status = 400)
-    
-    form = createpostform(request.POST)
-
-    if form.is_valid():
-        form.instance.author = request.user
-        form.save()
-        return redirect('index')
-
-
-def profile(request,id):
-
-    profile_user = User.objects.get(pk = id )
-
-    posts_profile = Post.objects.filter(author = id)
-    paginator = Paginator(posts_profile ,10)
-    p_num = request.GET.get('page')
-    page_posts = paginator.get_page(p_num)
-
-    if request.user.is_authenticated:
-        follow = profile_user.followers.filter(id = request.user.id).exists()
-    else:
-        follow = False
-    
-    return render(request,'network/profile.html', context={
-        'user_profile': profile_user,
-        'following': follow,
-        'followingcount': profile_user.follow.all().count(),
-        'followerscount': profile_user.followers.all().count(),
-        'page_posts': page_posts,
-        'prev_url': get_previous_url(page_posts),
-        'next_url': get_next_url(page_posts),
-
-
-    })
-
 @login_required
 def follow_user(request,to_user):
     if request.method != 'POST':
@@ -165,6 +127,40 @@ def following(request):
         'next_url': get_next_url(posts),
 
     })
+    
+def new_post(request):
+    if request.method != 'POST':
+        return JsonResponse({"error": 'required' } , status = 400)
+    
+    form = createpostform(request.POST)
+
+    if form.is_valid():
+        form.instance.author = request.user
+        form.save()
+        return redirect('index')
+    
+    
+@csrf_exempt
+@login_required
+def edit_post(request,post_id):
+   if request.method != 'POST':
+      return JsonResponse({'error': 'post is required'} , status = 400)
+   try:
+        post = Post.objects.get(pk = post_id)
+   except Post.DoesNotExist:
+        return JsonResponse({'error':' not found '}, status = 404)
+   if request.user == post.author:
+       body_unicode = request.body.decode('utf-8')
+       body = json.loads(body_unicode)
+       description = body['description']
+
+       Post.objects.filter(pk = post_id).update(description = f'{description}')
+       return JsonResponse({'message':"post updated success", 'description': description} , status = 200)
+
+   else:
+         return JsonResponse({'error':'need premision'}, status = 400)
+  
+   
 
 
 @csrf_exempt
@@ -185,6 +181,34 @@ def like_update(request,post_id):
     return JsonResponse({'postlike':postlike , 'countlike':likes}, status = 200)
 
 
+  
+
+
+def profile(request,id):
+
+    profile_user = User.objects.get(pk = id )
+
+    posts_profile = Post.objects.filter(author = id)
+    paginator = Paginator(posts_profile ,10)
+    p_num = request.GET.get('page')
+    page_posts = paginator.get_page(p_num)
+
+    if request.user.is_authenticated:
+        follow = profile_user.followers.filter(id = request.user.id).exists()
+    else:
+        follow = False
+    
+    return render(request,'network/profile.html', context={
+        'user_profile': profile_user,
+        'following': follow,
+        'followingcount': profile_user.follow.all().count(),
+        'followerscount': profile_user.followers.all().count(),
+        'page_posts': page_posts,
+        'prev_url': get_previous_url(page_posts),
+        'next_url': get_next_url(page_posts),
+
+
+    })
 
 
 
@@ -192,23 +216,7 @@ def like_update(request,post_id):
 
 
 
-@csrf_exempt
-@login_required
-def edit_post(request,post_id):
-   if request.method != 'POST':
-      return JsonResponse({'error': 'post is required'} , status = 400)
-   try:
-        post = Post.objects.get(pk = post_id)
-   except Post.DoesNotExist:
-        return JsonResponse({'error':' not found '}, status = 404)
-   if request.user == post.author:
-       body_unicode = request.body.decode('utf-8')
-       body = json.loads(body_unicode)
-       description = body['description']
 
-       Post.objects.filter(pk = post_id).update(description = f'{description}')
-       return JsonResponse({'message':"post updated success", 'description': description} , status = 200)
 
-   else:
-         return JsonResponse({'error':'need premision'}, status = 400)
-     
+
+
